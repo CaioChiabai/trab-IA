@@ -1,0 +1,5 @@
+agno
+groq
+google-genai
+python-dotenv
+duckduckgo-search
