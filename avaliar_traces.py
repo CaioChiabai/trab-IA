@@ -1,17 +1,20 @@
 """Bateria de avaliação do pesquisador RAG (agent_rag.py).
 
-Roda um conjunto de perguntas reais contra a base de artigos, captura os
-reasoning traces (chamadas de ferramenta + artigos recuperados) e gera um
-relatório em ``traces/relatorio_traces.md``. Serve de base para a análise de
-traces e a avaliação crítica exigidas no trabalho.
+Roda um conjunto de perguntas reais contra a base de artigos, captura o *trace de
+recuperação* (quais artigos a busca vetorial recupera e injeta no contexto) e o
+resultado de cada resposta, gerando ``traces/relatorio_traces.md``. Serve de base
+para a análise de traces e a avaliação crítica exigidas no trabalho.
 
-Para atingir os 10 casos pedidos no enunciado, basta acrescentar perguntas à
-lista ``PERGUNTAS`` abaixo (inclua casos difíceis, ambíguos e fora do escopo).
+O agente usa RAG "tradicional" (retrieve-then-read): o Agno recupera os trechos
+relevantes e os injeta no contexto antes de chamar o modelo — por isso o trace
+relevante é o conjunto de artigos recuperados, e não uma chamada de ferramenta.
+
+Para atingir os 10 casos pedidos no enunciado, acrescente perguntas à lista
+``PERGUNTAS`` (inclua casos difíceis, ambíguos e fora do escopo).
 
 Uso:
     python avaliar_traces.py
 """
-import json
 import time
 from pathlib import Path
 
@@ -33,61 +36,42 @@ PERGUNTAS = [
      "Fale sobre segurança."),
 ]
 
-PAUSA_SEG = 20  # respeita o limite de tokens/min do Groq entre execuções
-
-
-def _artigos_do_resultado(result_json: str) -> list[str]:
-    """Extrai os arquivos (artigos) recuperados de um resultado de busca."""
-    arquivos: list[str] = []
-    try:
-        for chunk in json.loads(result_json):
-            a = (chunk.get("meta_data") or {}).get("arquivo")
-            if a and a not in arquivos:
-                arquivos.append(a)
-    except Exception:
-        pass
-    return arquivos
+PAUSA_SEG = 15  # respeita o limite de tokens/min do Groq entre execuções
 
 
 def rodar() -> list[dict]:
     registros = []
     for i, (tag, q) in enumerate(PERGUNTAS, 1):
         print(f">>> [{i}/{len(PERGUNTAS)}] {tag}")
-        tool_infos, content, erro = [], "", None
+        content, erro = "", None
+        fontes = A.fontes_recuperadas(q)  # trace de recuperação (local, barato)
         try:
             resp = A.agent.run(q)
             content = resp.content or ""
-            for t in (getattr(resp, "tools", []) or []):
-                args = getattr(t, "tool_args", {}) or {}
-                tool_infos.append({
-                    "tool": getattr(t, "tool_name", "?"),
-                    "query": args.get("query", args),
-                    "artigos_recuperados": _artigos_do_resultado(getattr(t, "result", "") or ""),
-                })
             if "tool_use_failed" not in content:
                 A.salvar_resultado(q, content)
         except Exception as e:
             erro = f"{type(e).__name__}: {e}"
         registros.append({
-            "tag": tag, "pergunta": q, "n_tool_calls": len(tool_infos),
-            "tool_calls": tool_infos, "erro": erro, "resposta": content,
+            "tag": tag, "pergunta": q, "fontes": fontes,
+            "erro": erro, "resposta": content,
         })
+        print(f"   artigos_recuperados={len(fontes)} len={len(content)} erro={erro}")
         time.sleep(PAUSA_SEG)
     return registros
 
 
 def gerar_relatorio(registros: list[dict]) -> None:
     Path("traces").mkdir(exist_ok=True)
-    L = ["# Reasoning traces — pesquisador RAG multi-artigos", ""]
+    L = ["# Reasoning traces — pesquisador RAG multi-artigos", "",
+         "Cada caso registra os artigos recuperados da base vetorial (injetados no "
+         "contexto do modelo) e o resultado da resposta.", ""]
     for i, r in enumerate(registros, 1):
         falhou = "tool_use_failed" in (r["resposta"] or "") or r["erro"]
         L.append(f"## Caso {i} — {r['tag']}")
         L.append(f"**Pergunta:** {r['pergunta']}\n")
-        for j, tc in enumerate(r["tool_calls"], 1):
-            arts = ", ".join(tc["artigos_recuperados"]) or "(nenhum)"
-            L.append(f"- Tool call {j}: `{tc['tool']}(query=\"{tc['query']}\")` → {arts}")
-        if not r["tool_calls"]:
-            L.append("- Nenhuma chamada de ferramenta registrada.")
+        fontes = ", ".join(r["fontes"]) or "(nenhum)"
+        L.append(f"- Artigos recuperados (RAG): {fontes}")
         L.append(f"- Status: {'FALHA' if falhou else 'sucesso'} "
                  f"| {len(r['resposta'])} caracteres\n")
         if not falhou:
@@ -98,5 +82,4 @@ def gerar_relatorio(registros: list[dict]) -> None:
 
 if __name__ == "__main__":
     A.preparar_base()
-    regs = rodar()
-    gerar_relatorio(regs)
+    gerar_relatorio(rodar())

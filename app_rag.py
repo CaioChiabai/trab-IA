@@ -8,7 +8,6 @@ Para rodar:
     streamlit run app_rag.py
 """
 
-import json
 from datetime import datetime
 from pathlib import Path
 
@@ -57,17 +56,7 @@ def executar_pesquisa(pergunta: str):
     resposta = core.agent.run(pergunta)
     conteudo = resposta.content or ""
     falhou = "tool_use_failed" in conteudo or conteudo.strip().startswith('{"error"')
-
-    artigos = []
-    for t in (getattr(resposta, "tools", []) or []):
-        result = getattr(t, "result", "") or ""
-        try:
-            for chunk in json.loads(result):
-                a = (chunk.get("meta_data") or {}).get("arquivo")
-                if a and a not in artigos:
-                    artigos.append(a)
-        except Exception:
-            pass
+    artigos = [] if falhou else core.fontes_recuperadas(pergunta)
     return conteudo, artigos, falhou
 
 

@@ -111,30 +111,24 @@ def preparar_base() -> list[str]:
 # Agente
 # --------------------------------------------------------------------------- #
 agent = Agent(
-    # Llama 4 Scout emite tool calls no formato correto (o Llama 3.3 falha com
-    # 'tool_use_failed' no Groq ao usar ferramentas). É o modelo sugerido no enunciado.
     model=Groq(id=os.getenv("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")),
     knowledge=knowledge,
-    search_knowledge=True,   # expõe a ferramenta de busca na base vetorial
-    tool_call_limit=3,
+    # RAG "tradicional" (retrieve-then-read): o Agno recupera os trechos relevantes
+    # e os injeta no contexto ANTES de chamar o modelo. NÃO usamos tool calling
+    # porque o Llama no Groq falha de forma intermitente ('tool_use_failed') ao
+    # emitir a chamada de função; injetar o contexto direto é 100% confiável.
+    add_knowledge_to_context=True,
+    search_knowledge=False,
     markdown=True,
     instructions="""Você é um pesquisador bibliográfico especializado em análise
 COMPARATIVA de artigos científicos. Sua base de conhecimento contém um conjunto
 FIXO de artigos previamente ingeridos (em PDF). Seu papel é responder perguntas
 de alto nível comparando esses artigos entre si.
 
-FLUXO OBRIGATÓRIO (siga nesta ordem):
-1. PRIMEIRO, chame a ferramenta `search_knowledge_base` uma ou mais vezes para
-   recuperar trechos relevantes dos artigos. NÃO escreva nenhuma parte da resposta
-   antes de ter os resultados da busca em mãos.
-2. Só DEPOIS de receber os trechos, redija a resposta no formato abaixo.
-
-ESTRATÉGIA:
-- Faça UMA busca focada e abrangente (no máximo duas). Uma única busca já retorna
-  trechos de vários artigos diferentes — use-os para a comparação.
-- Depois de receber os resultados da busca, escreva a resposta COMPLETA de uma só
-  vez, sem interrompê-la para fazer novas buscas.
-- Baseie-se APENAS no conteúdo recuperado dos artigos ingeridos.
+CONTEXTO FORNECIDO:
+- Você recebe, no contexto desta conversa, trechos recuperados automaticamente dos
+  artigos ingeridos. Cada trecho indica o arquivo de origem.
+- Baseie-se APENAS nesses trechos. Escreva a resposta COMPLETA de uma só vez.
 - Na tabela comparativa, procure incluir artigos distintos (evite repetir a mesma fonte).
 
 REGRA FUNDAMENTAL — CITATION GROUNDING (integridade das citações):
@@ -198,11 +192,25 @@ def salvar_resultado(pergunta: str, conteudo: str) -> str:
     return str(caminho)
 
 
+def fontes_recuperadas(pergunta: str, max_results: int = 10) -> list[str]:
+    """Retorna os artigos (arquivos) distintos que a busca vetorial recupera para
+    a pergunta — os mesmos trechos que são injetados no contexto do agente."""
+    fontes: list[str] = []
+    try:
+        for doc in knowledge.search(pergunta, max_results=max_results):
+            arq = (getattr(doc, "meta_data", None) or {}).get("arquivo")
+            if arq and arq not in fontes:
+                fontes.append(arq)
+    except Exception:
+        pass
+    return fontes
+
+
 def executar_pesquisa(pergunta: str):
     """Roda o agente em segundo plano com barra de progresso.
 
-    Retorna uma tupla ``(conteudo, chamadas_de_ferramenta)`` — a segunda posição
-    contém os reasoning traces (ferramentas chamadas, com seus argumentos)."""
+    Retorna uma tupla ``(conteudo, fontes)`` — ``fontes`` é a lista de artigos
+    efetivamente recuperados da base vetorial para responder à pergunta."""
     with ThreadPoolExecutor(max_workers=1) as executor:
         futuro = executor.submit(agent.run, pergunta)
         with Progress(
@@ -219,20 +227,17 @@ def executar_pesquisa(pergunta: str):
                 time.sleep(0.1)
         resposta = futuro.result()
 
-    ferramentas = getattr(resposta, "tools", None) or []
-    return (resposta.content or ""), ferramentas
+    return (resposta.content or ""), fontes_recuperadas(pergunta)
 
 
-def _resumir_traces(ferramentas) -> None:
-    """Imprime um resumo dos reasoning traces (ferramentas chamadas)."""
-    if not ferramentas:
-        console.print("[dim](nenhuma chamada de ferramenta registrada)[/dim]")
+def _mostrar_fontes(fontes) -> None:
+    """Imprime os artigos recuperados da base para a resposta."""
+    if not fontes:
+        console.print("[dim](nenhum artigo recuperado)[/dim]")
         return
-    console.print(f"[bold]Reasoning traces:[/bold] {len(ferramentas)} chamada(s)")
-    for i, t in enumerate(ferramentas, 1):
-        nome = getattr(t, "tool_name", None) or getattr(t, "name", "?")
-        args = getattr(t, "tool_args", None) or getattr(t, "args", {})
-        console.print(f"  [cyan]{i}.[/cyan] {nome}  [dim]{args}[/dim]")
+    console.print(f"[bold]Artigos recuperados:[/bold] {len(fontes)}")
+    for i, f in enumerate(fontes, 1):
+        console.print(f"  [cyan]{i}.[/cyan] {f}")
 
 
 def main():
@@ -265,12 +270,12 @@ def main():
 
     # 3) Executa.
     console.print()
-    conteudo, ferramentas = executar_pesquisa(pergunta)
+    conteudo, fontes = executar_pesquisa(pergunta)
 
     console.rule("[bold green]Resultado[/bold green]")
     console.print(Markdown(conteudo))
-    console.rule("[bold]Traces[/bold]")
-    _resumir_traces(ferramentas)
+    console.rule("[bold]Fontes[/bold]")
+    _mostrar_fontes(fontes)
     console.rule()
 
     caminho = salvar_resultado(pergunta, conteudo)
