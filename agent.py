@@ -16,6 +16,10 @@ load_dotenv()
 
 console = Console()
 
+# Hooks opcionais — injetados pelo app.py durante execução web (None no modo terminal)
+_progress_callback = None          # callable(str) | None
+_sources_collected: list = []      # acumulado por web_search, lido pelo app.py
+
 
 def web_search(query: str, max_results: int = 8) -> str:
     """Busca artigos e páginas na web sobre o tema informado.
@@ -32,15 +36,16 @@ def web_search(query: str, max_results: int = 8) -> str:
         Uma string JSON com a lista de resultados, ou uma mensagem indicando
         que nenhum resultado foi encontrado após várias tentativas.
     """
-    console.print(f"  [cyan]🔎 Buscando:[/cyan] [italic]{query}[/italic]")
+    if _progress_callback:
+        _progress_callback(f"🔎 **Buscando:** `{query}`")
+    else:
+        console.print(f"  [cyan]🔎 Buscando:[/cyan] [italic]{query}[/italic]")
+
     tentativas = 4
     for i in range(tentativas):
         try:
             resultados = list(DDGS().text(query, max_results=max_results))
             if resultados:
-                console.print(
-                    f"     [green]✓ {len(resultados)} resultado(s) encontrado(s)[/green]"
-                )
                 limpos = [
                     {
                         "titulo": r.get("title"),
@@ -49,13 +54,22 @@ def web_search(query: str, max_results: int = 8) -> str:
                     }
                     for r in resultados
                 ]
+                _sources_collected.extend(limpos)
+                if _progress_callback:
+                    _progress_callback(f"✅ **{len(limpos)} fonte(s)** encontrada(s) para essa consulta")
+                else:
+                    console.print(
+                        f"     [green]✓ {len(limpos)} resultado(s) encontrado(s)[/green]"
+                    )
                 return json.dumps(limpos, ensure_ascii=False)
-        except Exception as e:  # throttling do DuckDuckGo cai aqui
-            console.print(
-                f"     [yellow]↻ tentativa {i + 1}/{tentativas} sem resultado "
-                f"(aguardando…)[/yellow]"
-            )
-        # backoff progressivo antes de tentar de novo
+        except Exception:
+            if _progress_callback:
+                _progress_callback(f"⏳ Tentativa {i + 1}/{tentativas} — aguardando provedor de busca…")
+            else:
+                console.print(
+                    f"     [yellow]↻ tentativa {i + 1}/{tentativas} sem resultado "
+                    f"(aguardando…)[/yellow]"
+                )
         time.sleep(2 * (i + 1))
     return json.dumps(
         {"aviso": "Nenhum resultado retornado após várias tentativas (possível "
@@ -96,7 +110,8 @@ Um ou dois parágrafos situando o tema e o panorama da literatura encontrada.
 
 ## 2. Principais trabalhos
 Uma tabela em Markdown com as colunas:
-| Título | Autores/Ano | Contribuição principal | Fonte (URL) |
+| Título | Autores/Ano | Contribuição principal | Fonte |
+Na coluna Fonte, use SEMPRE o formato de link Markdown: [🔗 Acessar](url)
 Inclua apenas trabalhos efetivamente encontrados na busca.
 
 ## 3. Metodologias e abordagens
