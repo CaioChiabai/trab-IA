@@ -4,3 +4,12 @@ __pycache__/
 .venv/
 venv/
 resultados/
+
+# base vetorial gerada (RAG)
+vectordb/
+_*.txt
+_*.json
+
+# relatório técnico (mantido apenas localmente, não versionado)
+relatorio-tecnico.typ
+relatorio-tecnico.pdf

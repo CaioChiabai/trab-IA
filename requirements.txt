@@ -1,7 +1,14 @@
+# Núcleo comum
 agno
 groq
-google-genai
 python-dotenv
-ddgs
 rich
 streamlit
+
+# Módulo 1 — pesquisador por busca na web (agent.py)
+ddgs
+
+# Módulo 2 — pesquisador RAG multi-PDF (agent_rag.py)
+lancedb            # banco vetorial local (embutido)
+fastembed          # embeddings locais (ONNX), sem chave de API
+pypdf              # leitura dos PDFs
