@@ -5,131 +5,137 @@ Cada caso registra os artigos recuperados da base vetorial (injetados no context
 ## Caso 1 — comparativa
 **Pergunta:** Compare as metodologias dos artigos sobre aprendizado federado. Quais datasets usam, no que divergem e quais lacunas apontam?
 
-- Artigos recuperados (RAG): advances-open-problems-2019.pdf, federated-ml-concept-yang-2019.pdf
-- Status: sucesso | 2715 caracteres
+- Artigos recuperados (RAG): advances-open-problems-2019.pdf, federated-ml-concept-yang-2019.pdf, comm-efficient-2016.pdf, fedavg-mcmahan-2017.pdf, fl-noniid-data-2018.pdf
+- Status: sucesso | 3710 caracteres
 
 <details><summary>Resposta</summary>
 
-# Pesquisa: Comparação das Metodologias de Aprendizado Federado
+# Pesquisa: Comparação de metodologias de artigos sobre aprendizado federado
 
 ## 1. Resumo comparativo
-Os artigos sobre aprendizado federado apresentam diversas metodologias e abordagens para lidar com os desafios desse tipo de aprendizado de máquina. O artigo "Advances and Open Problems in Federated Learning" [advances-open-problems-2019] discute as complexidades do aprendizado federado, incluindo a heterogeneidade dos dados, a privacidade e a justiça. Já o artigo "Federated Machine Learning: Concept and Directions" [federated-ml-concept-yang-2019] apresenta uma visão geral do aprendizado federado, incluindo as suas aplicações e os mecanismos de incentivo.
+Os artigos fornecidos discutem diferentes aspectos do aprendizado federado, incluindo comunicação eficiente, lidar com dados não IID (identicamente distribuídos) e incentivo para participação de organizações. Os artigos "comm-efficient-2016.pdf" e "fedavg-mcmahan-2017.pdf" focam em melhorar a eficiência de comunicação no aprendizado federado, enquanto "fl-noniid-data-2018.pdf" aborda o desafio de dados não IID. Já "federated-ml-concept-yang-2019.pdf" e "advances-open-problems-2019.pdf" fornecem uma visão geral do conceito de aprendizado federado e discutem desafios e oportunidades na área.
 
 ## 2. Tabela comparativa
 | Artigo (fonte) | Metodologia/abordagem | Dataset(s) | Principais resultados |
 | --- | --- | --- | --- |
-| [advances-open-problems-2019] | Discussão de desafios e oportunidades em aprendizado federado | Não mencionado | Análise de desafios e oportunidades em aprendizado federado |
-| [federated-ml-concept-yang-2019] | Visão geral do aprendizado federado e suas aplicações | Não mencionado | Apresentação de conceitos e direções para o aprendizado federado |
+| advances-open-problems-2019.pdf | Discussão de desafios e oportunidades em aprendizado federado | Não especificado | Destaca a importância do aprendizado federado e seus desafios |
+| federated-ml-concept-yang-2019.pdf | Visão geral do conceito de aprendizado federado | Não especificado | Discute a definição, tipos e aplicações do aprendizado federado |
+| comm-efficient-2016.pdf | Técnicas para melhorar a eficiência de comunicação no aprendizado federado | CIFAR-10 | Redução de até 2 ordens de magnitude na comunicação |
+| fedavg-mcmahan-2017.pdf | Algoritmo Federated Averaging (FedAvg) para aprendizado federado | MNIST, CIFAR-10, Shakespeare | Melhoria na precisão e redução na comunicação |
+| fl-noniid-data-2018.pdf | Abordagem para lidar com dados não IID no aprendizado federado | MNIST, CIFAR-10, KWS | Aumento de até 30% na precisão com dados não IID |
 
 ## 3. Metodologias e abordagens
-- O artigo [advances-open-problems-2019] discute as seguintes metodologias e abordagens:
-  * Otimização de parâmetros do sistema
-  * Seleção de dispositivos
-  * Planejamento de rodadas
-  * Execução de tarefas em dispositivos
-  * Mitigação de vieses
-- O artigo [federated-ml-concept-yang-2019] apresenta as seguintes abordagens:
-  * Aprendizado federado horizontal
-  * Aprendizado federado vertical
-  * Mecanismos de incentivo
+- **advances-open-problems-2019.pdf**: Discute desafios como ajuste de parâmetros do sistema, convergência, throughput, fairness, privacidade e robustez. Menciona a importância de desenvolver melhores algoritmos de otimização e personalização de modelos.
+- **federated-ml-concept-yang-2019.pdf**: Apresenta uma visão geral do aprendizado federado, incluindo tipos (horizontal, vertical e transferência federada) e desafios.
+- **comm-efficient-2016.pdf**: Propõe técnicas de atualização estruturada e esboçada para reduzir a comunicação.
+- **fedavg-mcmahan-2017.pdf**: Apresenta o algoritmo FedAvg e experimentos em diferentes conjuntos de dados.
+- **fl-noniid-data-2018.pdf**: Investiga o impacto de dados não IID na precisão do FedAvg e propõe uma estratégia de compartilhamento de dados para melhorar a precisão.
 
 ## 4. Convergências e divergências
-- Convergências:
-  * Ambos os artigos discutem a importância do aprendizado federado para a privacidade e a segurança dos dados.
-  * Os artigos destacam a necessidade de desenvolver métodos para lidar com a heterogeneidade dos dados e a seleção de dispositivos.
-- Divergências:
-  * O artigo [advances-open-problems-2019] foca mais nos desafios e oportunidades do aprendizado federado, enquanto o artigo [federated-ml-concept-yang-2019] apresenta uma visão geral do campo e suas aplicações.
+- **Convergências**: Todos os artigos destacam a importância do aprendizado federado para preservar a privacidade dos dados. Eles também enfatizam os desafios de comunicação e a necessidade de melhorar a eficiência.
+- **Divergências**: Enquanto alguns artigos focam em aspectos teóricos e conceituais (advances-open-problems-2019.pdf, federated-ml-concept-yang-2019.pdf), outros apresentam abordagens práticas para melhorar a eficiência de comunicação (comm-efficient-2016.pdf) e lidar com dados não IID (fl-noniid-data-2018.pdf).
 
 ## 5. Lacunas e questões em aberto
-- O artigo [advances-open-problems-2019] destaca as seguintes lacunas e questões em aberto:
-  * Quantificação e mitigação de vieses em sistemas de aprendizado federado
-  * Desenvolvimento de métodos para lidar com a heterogeneidade dos dados
-  * Integração com infraestrutura de rede
-- O artigo [federated-ml-concept-yang-2019] menciona a necessidade de desenvolver mecanismos de incentivo para motivar a participação de organizações no aprendizado federado.
+- **Lacunas**: Desenvolvimento de algoritmos mais eficientes para lidar com dados não IID, mecanismos de incentivo para a participação de organizações e melhorias na segurança e privacidade.
+- **Questões em aberto**: Como desenvolver modelos que sejam justos e transparentes? Como lidar com a heterogeneidade dos dispositivos clientes? Como garantir a segurança e a privacidade dos dados?
 
 ## 6. Fontes citadas
-- [advances-open-problems-2019.pdf]
-- [federated-ml-concept-yang-2019.pdf]
+- advances-open-problems-2019.pdf
+- federated-ml-concept-yang-2019.pdf
+- comm-efficient-2016.pdf
+- fedavg-mcmahan-2017.pdf
+- fl-noniid-data-2018.pdf
 
 </details>
 
 ## Caso 2 — datasets
 **Pergunta:** Quais datasets e métricas de avaliação são usados nos experimentos de aprendizado federado descritos nos artigos?
 
-- Artigos recuperados (RAG): advances-open-problems-2019.pdf, fl-noniid-data-2018.pdf, federated-ml-concept-yang-2019.pdf
-- Status: sucesso | 2381 caracteres
+- Artigos recuperados (RAG): advances-open-problems-2019.pdf, fl-noniid-data-2018.pdf, federated-ml-concept-yang-2019.pdf, fedavg-mcmahan-2017.pdf, comm-efficient-2016.pdf
+- Status: sucesso | 2566 caracteres
 
 <details><summary>Resposta</summary>
 
 # Pesquisa: Quais datasets e métricas de avaliação são usados nos experimentos de aprendizado federado descritos nos artigos?
 
 ## 1. Resumo comparativo
-Os artigos discutem vários aspectos do aprendizado federado, incluindo a importância de datasets e métricas de avaliação. No entanto, apenas alguns artigos mencionam explicitamente os datasets e métricas usados em experimentos. O artigo "fl-noniid-data-2018" menciona o uso de datasets como MNIST, CIFAR-10 e KWS, e métricas como a divergência de pesos e a precisão de teste.
+Os artigos descrevem experimentos de aprendizado federado utilizando vários datasets e métricas de avaliação. Os datasets incluem MNIST, CIFAR-10, Speech commands (KWS), e Shakespeare. As métricas de avaliação mencionadas incluem precisão (accuracy), perda (loss), divergência de peso (weight divergence) e taxa de contribuição de dispositivos.
 
 ## 2. Tabela comparativa
-| Artigo (fonte) | Metodologia/abordagem | Dataset(s) | Principais resultados |
-| --- | --- | --- | --- |
-| fl-noniid-data-2018 | Aprendizado federado com dados não-IID | MNIST, CIFAR-10, KWS | A precisão de teste diminui com o aumento da divergência de dados entre clientes. |
-| advances-open-problems-2019 | Discussão sobre desafios em aprendizado federado | Não mencionado | Não mencionado |
+| Artigo (fonte) | Dataset(s) | Métricas de avaliação |
+| --- | --- | --- |
+| advances-open-problems-2019.pdf | - | Precisão, perda, convergência, throughput, model fairness, privacidade e robustez |
+| fl-noniid-data-2018.pdf | MNIST, CIFAR-10, KWS | Precisão, divergência de peso (weight divergence), EMD (Earth Mover's Distance) |
+| federated-ml-concept-yang-2019.pdf | - | Precisão, perda, métricas de segurança e privacidade |
+| fedavg-mcmahan-2017.pdf | MNIST, CIFAR-10, Shakespeare | Precisão, perda, comunicação (rounds) |
+| comm-efficient-2016.pdf | CIFAR-10 | Precisão, perda, comunicação (tamanho de atualização) |
 
 ## 3. Metodologias e abordagens
-Os artigos "fl-noniid-data-2018" e "advances-open-problems-2019" discutem aspectos diferentes do aprendizado federado. O artigo "fl-noniid-data-2018" apresenta uma abordagem experimental para avaliar o impacto da divergência de dados em clientes no desempenho do aprendizado federado. Já o artigo "advances-open-problems-2019" discute desafios e oportunidades em aprendizado federado, mas não apresenta experimentos específicos.
+- **fl-noniid-data-2018.pdf**: Utiliza FedAvg com diferentes datasets (MNIST, CIFAR-10, KWS) e avalia a precisão e divergência de peso com variação na distribuição de dados (IID e não-IID).
+- **fedavg-mcmahan-2017.pdf**: Aplica FedAvg em datasets como MNIST, CIFAR-10 e Shakespeare, avaliando a precisão e comunicação.
+- **comm-efficient-2016.pdf**: Investiga métodos de atualização estruturada e esboçada para reduzir a comunicação em aprendizado federado, avaliando a precisão e tamanho de atualização no dataset CIFAR-10.
 
 ## 4. Convergências e divergências
-Os artigos concordam que o aprendizado federado é uma área de pesquisa importante, mas com muitos desafios a serem superados. No entanto, não há uma convergência clara sobre os datasets e métricas de avaliação a serem usados em experimentos.
+- **Convergência**: Todos os artigos buscam melhorar a precisão dos modelos em aprendizado federado.
+- **Divergência**: 
+  - **fl-noniid-data-2018.pdf** e **fedavg-mcmahan-2017.pdf** discutem a importância da distribuição de dados (IID vs não-IID) na convergência do modelo.
+  - **comm-efficient-2016.pdf** foca na eficiência de comunicação sem sacrificar a precisão.
 
 ## 5. Lacunas e questões em aberto
-Os artigos destacam várias lacunas e questões em aberto em aprendizado federado, incluindo:
-* A necessidade de desenvolver métodos para lidar com dados não-IID em clientes.
-* A importância de avaliar o desempenho do aprendizado federado em diferentes cenários.
-* A falta de datasets e métricas de avaliação padrão para experimentos de aprendizado federado.
+- Avaliação de *fairness* e privacidade em diferentes configurações de aprendizado federado.
+- Impacto de diferentes distribuições de dados nos resultados do modelo.
+- Desenvolvimento de métodos para reduzir a comunicação sem comprometer a precisão.
 
 ## 6. Fontes citadas
-* fl-noniid-data-2018.pdf
-* advances-open-problems-2019.pdf
-
-É importante notar que a resposta foi elaborada com base nos trechos fornecidos e pode não ser exaustiva ou completamente precisa, uma vez que os artigos podem ter conteúdo adicional não incluído nos trechos citados.
+- advances-open-problems-2019.pdf
+- fl-noniid-data-2018.pdf
+- federated-ml-concept-yang-2019.pdf
+- fedavg-mcmahan-2017.pdf
+- comm-efficient-2016.pdf
 
 </details>
 
 ## Caso 3 — nao-iid
 **Pergunta:** O que os artigos dizem sobre dados não-IID (não independentes e identicamente distribuídos) e como isso afeta o treinamento?
 
-- Artigos recuperados (RAG): advances-open-problems-2019.pdf, comm-efficient-2016.pdf, fl-noniid-data-2018.pdf
-- Status: sucesso | 2764 caracteres
+- Artigos recuperados (RAG): advances-open-problems-2019.pdf, comm-efficient-2016.pdf, fl-noniid-data-2018.pdf, federated-ml-concept-yang-2019.pdf, fedavg-mcmahan-2017.pdf
+- Status: sucesso | 3611 caracteres
 
 <details><summary>Resposta</summary>
 
 # Pesquisa: dados não-IID (não independentes e identicamente distribuídos) e como isso afeta o treinamento
 
 ## 1. Resumo comparativo
-Os artigos discutem o impacto dos dados não-IID (não independentes e identicamente distribuídos) no treinamento de modelos de aprendizado de máquina, especialmente em ambientes de aprendizado federado. A principal preocupação é que os dados não-IID podem levar a modelos enviesados e com desempenho reduzido. Os autores destacam a importância de considerar a heterogeneidade dos dados em dispositivos diferentes e a necessidade de desenvolver métodos que possam lidar com essa heterogeneidade.
+Os artigos discutem o desafio de treinar modelos de aprendizado de máquina em dados não-IID (não independentes e identicamente distribuídos) em ambientes de aprendizado federado. O aprendizado federado é um enfoque em treinar modelos de forma descentralizada, mantendo os dados locais nos dispositivos dos usuários. No entanto, isso pode levar a desafios, especialmente quando os dados são não-IID, o que significa que as distribuições de dados em diferentes dispositivos podem variar significativamente.
 
 ## 2. Tabela comparativa
 | Artigo (fonte) | Metodologia/abordagem | Dataset(s) | Principais resultados |
 | --- | --- | --- | --- |
-| advances-open-problems-2019 | Discussão de desafios em aprendizado federado, incluindo dados não-IID | Não especificado | Destaque da importância de lidar com dados não-IID em aprendizado federado |
-| comm-efficient-2016 | Estudo de eficiência de comunicação em aprendizado federado | Não especificado | Análise da comunicação assimétrica e sua influência no treinamento |
-| fl-noniid-data-2018 | Avaliação experimental do impacto de dados não-IID no treinamento federado | MNIST, CIFAR-10, KWS | Mostraram que o desempenho do modelo diminui com o aumento da não-IID |
+| advances-open-problems-2019.pdf | Discussão sobre desafios em aprendizado federado, incluindo comunicação e privacidade. | Não especificado | Não especificado |
+| comm-efficient-2016.pdf | Proposta de métodos para reduzir a comunicação em aprendizado federado, incluindo atualizações estruturadas e esboçadas. | CIFAR-10 | Redução de até 2 ordens de magnitude na comunicação sem perda significativa de precisão. |
+| fl-noniid-data-2018.pdf | Análise do impacto de dados não-IID no desempenho do FedAvg e proposta de uma estratégia de compartilhamento de dados globais. | MNIST, CIFAR-10, KWS | A precisão pode ser aumentada em até 30% com a introdução de 5% de dados globais compartilhados. |
+| federated-ml-concept-yang-2019.pdf | Discussão sobre conceitos e aplicações de aprendizado federado, incluindo considerações de privacidade. | Não especificado | Não especificado |
+| fedavg-mcmahan-2017.pdf | Introdução ao algoritmo FedAvg para aprendizado federado e análise de seu desempenho em datasets IID e não-IID. | MNIST, CIFAR-10 | FedAvg mostra robustez em datasets não-IID, mas o desempenho pode variar. |
 
 ## 3. Metodologias e abordagens
-Os artigos adotam diferentes abordagens para lidar com dados não-IID:
-- **advances-open-problems-2019**: Discutem a necessidade de desenvolver métodos que possam lidar com a heterogeneidade dos dados em dispositivos diferentes.
-- **comm-efficient-2016**: Analisam a eficiência de comunicação em aprendizado federado, considerando a comunicação assimétrica.
-- **fl-noniid-data-2018**: Realizam uma avaliação experimental do impacto de dados não-IID no treinamento federado, utilizando conjuntos de dados como MNIST, CIFAR-10 e KWS.
+- **comm-efficient-2016.pdf**: Os autores propõem duas abordagens para reduzir a comunicação: atualizações estruturadas (low-rank e máscara aleatória) e atualizações esboçadas. Eles demonstram a eficácia dessas abordagens em reduzir a comunicação sem comprometer a precisão no dataset CIFAR-10.
+- **fl-noniid-data-2018.pdf**: Os autores investigam o impacto de dados não-IID no algoritmo FedAvg e propõem uma estratégia de compartilhamento de dados globais para melhorar a precisão. Eles testam essa abordagem em três datasets: MNIST, CIFAR-10 e KWS.
+- **fedavg-mcmahan-2017.pdf**: O artigo apresenta o algoritmo FedAvg e discute suas propriedades e vantagens para o aprendizado federado, incluindo a capacidade de lidar com dados não-IID.
 
 ## 4. Convergências e divergências
-- **Convergências**: Todos os artigos destacam a importância de considerar a heterogeneidade dos dados em aprendizado federado.
-- **Divergências**: Enquanto **advances-open-problems-2019** e **comm-efficient-2016** discutem mais amplamente os desafios e possíveis abordagens, **fl-noniid-data-2018** apresenta resultados experimentais concretos sobre o impacto de dados não-IID.
+- **Convergências**: Todos os artigos reconhecem os desafios impostos por dados não-IID no aprendizado federado e a importância de desenvolver métodos para lidar com essas situações.
+- **Divergências**: As abordagens propostas variam, desde métodos para reduzir a comunicação até estratégias para melhorar a precisão em datasets não-IID.
 
 ## 5. Lacunas e questões em aberto
-- **Lacunas**: Ainda há uma necessidade de desenvolver métodos eficazes para lidar com dados não-IID em aprendizado federado.
-- **Questões em aberto**: Como melhorar a robustez dos modelos em relação à heterogeneidade dos dados? Como garantir a equidade e a justiça nos modelos treinados em ambientes federados?
+- **Lacunas**: Ainda há uma necessidade de desenvolver métodos mais eficazes para lidar com dados altamente não-IID e de melhorar a comunicação em ambientes de aprendizado federado.
+- **Questões em aberto**: Questões como a privacidade dos dados, a segurança e a motivação para a participação de diferentes organizações no aprendizado federado ainda precisam ser abordadas.
 
 ## 6. Fontes citadas
 - advances-open-problems-2019.pdf
 - comm-efficient-2016.pdf
 - fl-noniid-data-2018.pdf
+- federated-ml-concept-yang-2019.pdf
+- fedavg-mcmahan-2017.pdf
 
 </details>
 
@@ -137,111 +143,127 @@ Os artigos adotam diferentes abordagens para lidar com dados não-IID:
 **Pergunta:** Qual artigo propõe o algoritmo FedAvg (Federated Averaging) e como ele reduz o custo de comunicação?
 
 - Artigos recuperados (RAG): comm-efficient-2016.pdf, advances-open-problems-2019.pdf, fedavg-mcmahan-2017.pdf, fl-noniid-data-2018.pdf, federated-ml-concept-yang-2019.pdf
-- Status: sucesso | 2506 caracteres
+- Status: sucesso | 2456 caracteres
 
 <details><summary>Resposta</summary>
 
 # Pesquisa: Qual artigo propõe o algoritmo FedAvg (Federated Averaging) e como ele reduz o custo de comunicação?
 
 ## 1. Resumo comparativo
-O algoritmo FedAvg (Federated Averaging) foi proposto por McMahan et al. em 2017 [fedavg-mcmahan-2017]. Ele é uma técnica de aprendizado federado que permite que múltiplos dispositivos móveis treinem um modelo de aprendizado de máquina de forma colaborativa, mantendo os dados locais. O FedAvg reduz o custo de comunicação selecionando apenas uma fração de clientes em cada rodada de comunicação, realizando atualizações locais nesses clientes e enviando as atualizações para o servidor, que então agrega essas atualizações para atualizar o modelo global.
+O algoritmo FedAvg (Federated Averaging) foi proposto por McMahan et al. em 2017 no artigo "fedavg-mcmahan-2017.pdf". O FedAvg é uma técnica de aprendizado federado que permite que dispositivos clientes treinem um modelo de forma colaborativa sem compartilhar seus dados locais. O artigo "comm-efficient-2016.pdf" discute técnicas para reduzir o custo de comunicação no FedAvg, incluindo atualizações estruturadas e atualizações esboçadas.
 
 ## 2. Tabela comparativa
 | Artigo (fonte) | Metodologia/abordagem | Dataset(s) | Principais resultados |
 | --- | --- | --- | --- |
-| [fedavg-mcmahan-2017](fedavg-mcmahan-2017.pdf) | FedAvg (Federated Averaging) | Não especificado | Proposto o algoritmo FedAvg para aprendizado federado |
-| [comm-efficient-2016](comm-efficient-2016.pdf) | Técnicas de atualização estruturada e esboçada | CIFAR-10 | Redução do custo de comunicação em até 2 ordens de magnitude |
+| comm-efficient-2016.pdf | Técnicas de comunicação eficiente para FedAvg, incluindo atualizações estruturadas e esboçadas. | CIFAR-10 | Redução do custo de comunicação em até 2 ordens de magnitude. |
+| fedavg-mcmahan-2017.pdf | Proposta do algoritmo FedAvg para aprendizado federado. | MNIST, CIFAR-10 | Melhoria na precisão do modelo com redução de comunicação. |
+| fl-noniid-data-2018.pdf | Análise do desempenho do FedAvg em datasets não-IID. | MNIST, CIFAR-10, KWS | Redução da precisão com dados não-IID, proposta de solução com dados compartilhados. |
 
 ## 3. Metodologias e abordagens
-- O FedAvg [fedavg-mcmahan-2017] opera em rodadas de comunicação, onde uma fração de clientes é selecionada, e cada cliente realiza várias épocas de SGD com uma taxa de aprendizado específica em seu conjunto de dados local. As atualizações são então enviadas para o servidor, que as agrega para atualizar o modelo global.
-- As técnicas de atualização estruturada e esboçada [comm-efficient-2016] limitam as atualizações a terem uma estrutura pré-especificada (como baixa classificação) ou as aproximam de forma compacta antes de enviá-las para o servidor.
+- O artigo "fedavg-mcmahan-2017.pdf" propõe o algoritmo FedAvg, que permite que clientes realizem treinamento local e enviem atualizações ao servidor para agregar o modelo global.
+- O artigo "comm-efficient-2016.pdf" apresenta técnicas para reduzir o custo de comunicação, incluindo:
+  - Atualizações estruturadas (low-rank e máscara aleatória).
+  - Atualizações esboçadas (compressão de atualizações).
 
 ## 4. Convergências e divergências
-- O FedAvg [fedavg-mcmahan-2017] foca em como realizar aprendizado federado de forma eficiente em termos de comunicação, enquanto [comm-efficient-2016] investiga formas de reduzir a quantidade de dados comunicados durante o treinamento de redes neurais.
+- Os artigos convergem na importância de reduzir o custo de comunicação no aprendizado federado.
+- Divergem nas abordagens específicas para alcançar essa redução:
+  - "comm-efficient-2016.pdf" foca em técnicas de compressão e estruturação de atualizações.
+  - "fedavg-mcmahan-2017.pdf" introduz o FedAvg como uma abordagem para aprendizado federado eficiente.
 
 ## 5. Lacunas e questões em aberto
-- Ainda há necessidade de desenvolver métodos mais eficientes para lidar com conjuntos de dados não IID (identicamente distribuídos) [advances-open-problems-2019].
-- A otimização do FedAvg em diferentes cenários, incluindo a escolha de clientes e a agregação de atualizações, permanece uma área de pesquisa ativa.
+- A questão de como lidar com datasets não-IID de forma eficiente ainda é um desafio, como discutido em "fl-noniid-data-2018.pdf".
+- A necessidade de desenvolver métodos que equilibrem precisão e comunicação eficiente.
 
 ## 6. Fontes citadas
-- [fedavg-mcmahan-2017](fedavg-mcmahan-2017.pdf)
-- [comm-efficient-2016](comm-efficient-2016.pdf)
+- comm-efficient-2016.pdf
+- fedavg-mcmahan-2017.pdf
+- fl-noniid-data-2018.pdf
 
 </details>
 
 ## Caso 5 — fora-escopo
 **Pergunta:** Qual é a acurácia do GPT-4 no exame ENEM segundo estes artigos?
 
-- Artigos recuperados (RAG): advances-open-problems-2019.pdf, fedavg-mcmahan-2017.pdf
-- Status: sucesso | 2231 caracteres
+- Artigos recuperados (RAG): advances-open-problems-2019.pdf, fedavg-mcmahan-2017.pdf, federated-ml-concept-yang-2019.pdf, fl-noniid-data-2018.pdf, comm-efficient-2016.pdf
+- Status: sucesso | 2032 caracteres
 
 <details><summary>Resposta</summary>
 
-# Pesquisa: acurácia do GPT-4 no exame ENEM segundo artigos científicos
+# Pesquisa: Acurácia do GPT-4 no exame ENEM segundo artigos científicos
 
 ## 1. Resumo comparativo
-Os artigos científicos fornecidos não mencionam especificamente a acurácia do GPT-4 no exame ENEM. A maioria dos artigos parece estar relacionada a federated learning, um campo de aprendizado de máquina, e não ao desempenho de modelos de linguagem como o GPT-4 em exames específicos.
+Os artigos fornecidos não mencionam especificamente o GPT-4 ou sua acurácia no exame ENEM. Eles discutem principalmente conceitos de aprendizado federado, comunicação eficiente em aprendizado de máquina, e preservação de privacidade em dados. Não há informações diretas sobre o desempenho do GPT-4 em exames como o ENEM.
 
 ## 2. Tabela comparativa
-Não é possível criar uma tabela comparativa direta relacionada à acurácia do GPT-4 no exame ENEM com base nos artigos fornecidos, pois nenhum deles aborda esse tópico.
+Não há informações relevantes para criar uma tabela comparativa sobre a acurácia do GPT-4 no exame ENEM, pois os artigos não abordam esse tópico.
 
 ## 3. Metodologias e abordagens
-Os artigos fornecidos discutem principalmente conceitos e desafios relacionados a federated learning, incluindo:
-- **Federated Averaging (FedAvg)**: Um algoritmo de aprendizado federado que combina modelos locais de clientes para criar um modelo global.
-- **Desafios em federated learning**: Como lidar com dados não IID (identicamente distribuídos), comunicação eficiente, privacidade e segurança.
-- **Técnicas para melhorar a eficiência**: Como a compressão de comunicação, a adaptação de taxas de aprendizado e a personalização de modelos.
+Os artigos discutem metodologias e abordagens em aprendizado federado, incluindo:
+- **FedAvg (McMahan et al., 2017)**: Um algoritmo de aprendizado federado que agrega modelos locais de clientes para criar um modelo global.
+- **Comunicação eficiente**: Técnicas para reduzir o custo de comunicação em aprendizado federado, incluindo atualizações estruturadas e esboçadas.
 
 ## 4. Convergências e divergências
-Não há informações suficientes para discutir convergências ou divergências em relação à acurácia do GPT-4 no exame ENEM, pois o tópico não é abordado nos artigos.
+Não há convergências ou divergências relacionadas ao GPT-4 ou ENEM nos artigos fornecidos, pois esses tópicos não são abordados.
 
 ## 5. Lacunas e questões em aberto
-Os artigos sugerem várias lacunas e questões em aberto em federated learning, incluindo:
-- **Melhorar a eficiência da comunicação**: Automatizar a compressão sem afetar a convergência.
-- **Lidar com dados não IID**: Desenvolver algoritmos que possam lidar eficazmente com a heterogeneidade dos dados dos clientes.
-- **Privacidade e segurança**: Garantir a proteção dos dados dos usuários em ambientes de aprendizado federado.
+As principais lacunas nos artigos fornecidos são:
+- **Desempenho do GPT-4**: Não há menção ao GPT-4 ou seu desempenho em qualquer exame.
+- **ENEM**: Não há discussões sobre o exame ENEM ou avaliações de modelos de linguagem nesse contexto.
 
 ## 6. Fontes citadas
-- [advances-open-problems-2019.pdf](advances-open-problems-2019.pdf)
-- [fedavg-mcmahan-2017.pdf](fedavg-mcmahan-2017.pdf)
+- **advances-open-problems-2019.pdf**: Discussa problemas abertos em otimização federada.
+- **fedavg-mcmahan-2017.pdf**: Apresenta o algoritmo FedAvg para aprendizado federado.
+- **federated-ml-concept-yang-2019.pdf**: Discute conceitos de aprendizado federado e preservação de privacidade.
+- **fl-noniid-data-2018.pdf**: Investiga o desempenho do FedAvg em dados não IID.
+- **comm-efficient-2016.pdf**: Propõe métodos para comunicação eficiente em aprendizado federado.
 
-Em resumo, os artigos científicos fornecidos não contêm informações sobre a acurácia do GPT-4 no exame ENEM. Eles estão mais focados em desafios e técnicas de federated learning. Portanto, não é possível determinar a acurácia do GPT-4 no exame ENEM com base nesses artigos.
+Não foi possível encontrar informações sobre a acurácia do GPT-4 no exame ENEM nos artigos fornecidos.
 
 </details>
 
 ## Caso 6 — ambigua
 **Pergunta:** Fale sobre segurança.
 
-- Artigos recuperados (RAG): advances-open-problems-2019.pdf, federated-ml-concept-yang-2019.pdf
-- Status: sucesso | 2720 caracteres
+- Artigos recuperados (RAG): advances-open-problems-2019.pdf, federated-ml-concept-yang-2019.pdf, fedavg-mcmahan-2017.pdf, comm-efficient-2016.pdf, fl-noniid-data-2018.pdf
+- Status: sucesso | 4064 caracteres
 
 <details><summary>Resposta</summary>
 
-# Pesquisa: Segurança em Federated Learning
+# Pesquisa: Segurança em Aprendizagem Federada
 
 ## 1. Resumo comparativo
-A segurança em Federated Learning (FL) é um tema crucial devido à natureza distribuída do treinamento de modelos de machine learning. Os artigos analisados discutem várias ameaças e desafios de segurança, incluindo ataques de envenenamento de dados e modelo, evasão, e questões de privacidade. Eles também exploram abordagens para mitigar esses riscos, como o uso de privacidade diferencial, criptografia homomórfica e computação multipartidária segura.
+Os artigos discutem desafios e soluções relacionados à segurança na aprendizagem federada, incluindo a proteção de dados, privacidade e robustez contra ataques. A aprendizagem federada é uma abordagem que permite o treinamento de modelos de machine learning em dispositivos locais, sem a necessidade de compartilhar os dados. No entanto, isso traz desafios de segurança, como a proteção contra ataques de envenenamento de dados e a garantia de privacidade dos dados dos usuários.
 
 ## 2. Tabela comparativa
 | Artigo (fonte) | Metodologia/abordagem | Dataset(s) | Principais resultados |
-|----------------|----------------------|------------|----------------------|
-| advances-open-problems-2019 | Discussão de desafios de segurança em FL, incluindo ataques e defesas. | Não mencionado | Importância de desenvolver métodos de FL robustos e seguros. |
-| federated-ml-concept-yang-2019 | Visão geral de aprendizado federado, incluindo aspectos de segurança. | Não mencionado | Necessidade de proteger a privacidade dos dados dos participantes. |
+| --- | --- | --- | --- |
+| advances-open-problems-2019.pdf | Discussão de desafios de segurança e privacidade em aprendizagem federada | - | Apresenta desafios de segurança e privacidade em aprendizagem federada, incluindo a proteção contra ataques de envenenamento de dados e a garantia de privacidade dos dados dos usuários. |
+| federated-ml-concept-yang-2019.pdf | Descrição de conceitos e aplicações de aprendizagem federada | - | Discute conceitos e aplicações de aprendizagem federada, incluindo a proteção de dados e a segurança. |
+| fedavg-mcmahan-2017.pdf | Algoritmo de aprendizagem federada Federated Averaging | - | Apresenta o algoritmo Federated Averaging para aprendizagem federada, que melhora a eficiência da comunicação. |
+| comm-efficient-2016.pdf | Técnicas de comunicação eficiente para aprendizagem federada | CIFAR-10 | Propostas de técnicas de comunicação eficiente para aprendizagem federada, incluindo atualizações estruturadas e esboçadas. |
+| fl-noniid-data-2018.pdf | Efeitos de dados não IID em aprendizagem federada | MNIST, CIFAR-10, KWS | Analisa os efeitos de dados não IID em aprendizagem federada e propõe uma estratégia para melhorar a precisão. |
 
 ## 3. Metodologias e abordagens
-- **Privacidade Diferencial (DP):** Um framework matemático para proteger a privacidade dos dados, permitindo a análise de dados sensíveis de forma controlada. [advances-open-problems-2019]
-- **Criptografia Homomórfica (HE):** Permite realizar operações em dados criptografados sem a necessidade de descriptografá-los primeiro, o que é útil para computação segura em ambientes de FL. [federated-ml-concept-yang-2019]
-- **Computação Multipartidária Segura (MPC):** Um campo da criptografia que permite a computação em entradas privadas de forma que só o resultado é revelado, sem expor as entradas. [advances-open-problems-2019]
+- **Advances-open-problems-2019.pdf**: Discute a importância da robustez e privacidade em aprendizagem federada, mencionando que a integração de mecanismos de privacidade e robustez pode trazer benefícios, mas também revela novas vulnerabilidades.
+- **Federated-ml-concept-yang-2019.pdf**: Apresenta conceitos de aprendizagem federada, incluindo a proteção de dados e a segurança, e discute a importância da segurança em aprendizagem federada.
+- **Fedavg-mcmahan-2017.pdf**: Descreve o algoritmo Federated Averaging, que é uma abordagem para aprendizagem federada que melhora a eficiência da comunicação.
+- **Comm-efficient-2016.pdf**: Propostas de técnicas de comunicação eficiente para aprendizagem federada, incluindo atualizações estruturadas e esboçadas, que podem reduzir a comunicação em até duas ordens de magnitude.
+- **Fl-noniid-data-2018.pdf**: Analisa os efeitos de dados não IID em aprendizagem federada e propõe uma estratégia para melhorar a precisão.
 
 ## 4. Convergências e divergências
-- **Convergências:** A importância da segurança e privacidade em FL é um tema comum. Tanto a privacidade diferencial quanto a criptografia homomórfica são vistos como ferramentas valiosas para alcançar esses objetivos.
-- **Divergências:** Os artigos podem diferir na ênfase dada a diferentes tipos de ataques (por exemplo, envenenamento de dados vs. evasão) e na discussão de cenários de FL específicos (por exemplo, cross-device vs. cross-silo).
+- **Convergências**: Todos os artigos destacam a importância da segurança e privacidade em aprendizagem federada. Eles também discutem desafios e soluções para proteger os dados dos usuários e garantir a robustez dos modelos.
+- **Divergências**: Os artigos têm focos diferentes, alguns se concentram em aspectos teóricos, enquanto outros apresentam abordagens práticas. Além disso, alguns artigos discutem a importância da comunicação eficiente, enquanto outros se concentram em aspectos de segurança.
 
 ## 5. Lacunas e questões em aberto
-- **Desenvolvimento de métodos de FL robustos:** Ainda há uma necessidade significativa de desenvolver métodos que possam lidar com uma variedade de ataques e cenários. [advances-open-problems-2019]
-- **Balancedar privacidade e utilidade:** Garantir que as soluções de segurança não comprometam significativamente o desempenho dos modelos é um desafio contínuo.
+- **Lacunas**: Ainda há uma necessidade de mais pesquisas sobre segurança e privacidade em aprendizagem federada, especialmente em relação à proteção contra ataques de envenenamento de dados e à garantia de privacidade dos dados dos usuários.
+- **Questões em aberto**: Como garantir a segurança e privacidade em aprendizagem federada em diferentes cenários? Como proteger os dados dos usuários em dispositivos locais? Como garantir a robustez dos modelos em face de ataques?
 
 ## 6. Fontes citadas
 - advances-open-problems-2019.pdf
 - federated-ml-concept-yang-2019.pdf
+- fedavg-mcmahan-2017.pdf
+- comm-efficient-2016.pdf
+- fl-noniid-data-2018.pdf
 
 </details>
