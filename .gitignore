@@ -3,10 +3,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-resultados/
 
-# base vetorial gerada (RAG)
-vectordb/
+# resultados e base vetorial gerada (dentro de data/)
+data/resultados/
+data/vectordb/
 _*.txt
 _*.json
 

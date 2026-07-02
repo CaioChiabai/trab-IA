@@ -1,9 +1,9 @@
-"""Bateria de avaliação do pesquisador RAG (agent_rag.py).
+"""Bateria de avaliação do pesquisador RAG (src/agents/rag.py).
 
 Roda um conjunto de perguntas reais contra a base de artigos, captura o *trace de
 recuperação* (quais artigos a busca vetorial recupera e injeta no contexto) e o
-resultado de cada resposta, gerando ``traces/relatorio_traces.md``. Serve de base
-para a análise de traces e a avaliação crítica exigidas no trabalho.
+resultado de cada resposta, gerando ``docs/traces/relatorio_traces.md``. Serve de
+base para a análise de traces e a avaliação crítica exigidas no trabalho.
 
 O agente usa RAG "tradicional" (retrieve-then-read): o Agno recupera os trechos
 relevantes e os injeta no contexto antes de chamar o modelo — por isso o trace
@@ -12,13 +12,15 @@ relevante é o conjunto de artigos recuperados, e não uma chamada de ferramenta
 Para atingir os 10 casos pedidos no enunciado, acrescente perguntas à lista
 ``PERGUNTAS`` (inclua casos difíceis, ambíguos e fora do escopo).
 
-Uso:
-    python avaliar_traces.py
+Uso (a partir da raiz do projeto):
+    python -m scripts.avaliar_traces
 """
 import time
-from pathlib import Path
 
-import agent_rag as A
+from src.config import BASE_DIR
+from src.agents import rag as A
+
+TRACES_DIR = BASE_DIR / "docs" / "traces"
 
 # (rótulo, pergunta). Casos "fora-escopo" e "ambigua" testam anti-alucinação.
 PERGUNTAS = [
@@ -65,7 +67,7 @@ def rodar() -> list[dict]:
 
 
 def gerar_relatorio(registros: list[dict]) -> None:
-    Path("traces").mkdir(exist_ok=True)
+    TRACES_DIR.mkdir(parents=True, exist_ok=True)
     L = ["# Reasoning traces — pesquisador RAG multi-artigos", "",
          "Cada caso registra os artigos recuperados da base vetorial (injetados no "
          "contexto do modelo) e o resultado da resposta.", ""]
@@ -79,8 +81,8 @@ def gerar_relatorio(registros: list[dict]) -> None:
                  f"| {len(r['resposta'])} caracteres\n")
         if not falhou:
             L += ["<details><summary>Resposta</summary>", "", r["resposta"], "", "</details>", ""]
-    Path("traces/relatorio_traces.md").write_text("\n".join(L), encoding="utf-8")
-    print("Relatório salvo em traces/relatorio_traces.md")
+    (TRACES_DIR / "relatorio_traces.md").write_text("\n".join(L), encoding="utf-8")
+    print(f"Relatório salvo em {TRACES_DIR / 'relatorio_traces.md'}")
 
 
 if __name__ == "__main__":

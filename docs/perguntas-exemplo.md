@@ -1,7 +1,8 @@
 # Perguntas de exemplo — pesquisador RAG multi-artigos
 
-Perguntas prontas para testar/demonstrar o agente (`agent_rag.py` / `app_rag.py`)
-sobre o corpus de 5 artigos de **aprendizado federado** em `artigos/`.
+Perguntas prontas para testar/demonstrar o agente (`src/agents/rag.py`, modo
+**📚 Pesquisa nos PDFs (RAG)** do app) sobre o corpus de 5 artigos de
+**aprendizado federado** em `data/artigos/`.
 
 > Dica: perguntas **específicas e completas** funcionam melhor. Graças à
 > recuperação balanceada, as comparativas cobrem os 5 artigos.
