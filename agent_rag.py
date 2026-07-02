@@ -69,6 +69,48 @@ def listar_pdfs() -> list[Path]:
     return sorted(PASTA_ARTIGOS.glob("*.pdf"))
 
 
+def remover_artigo(nome_pdf: str) -> bool:
+    """Remove um artigo da base de conhecimento.
+
+    Apaga tanto os vetores indexados no LanceDB (pelo nome do artigo, que é o
+    ``stem`` usado na ingestão) quanto o próprio arquivo PDF em ``artigos/``.
+    Sem isso, deletar apenas o PDF deixaria os vetores órfãos na base, e o
+    agente continuaria recuperando trechos do artigo "removido".
+
+    ``nome_pdf`` é o nome do arquivo (ex.: ``fedavg-mcmahan-2017.pdf``).
+    Retorna ``True`` se o arquivo foi de fato apagado do disco.
+    """
+    stem = Path(nome_pdf).stem
+    # Remove os vetores. Tenta por nome (usado na ingestão) e, por garantia,
+    # também por metadata do arquivo — assim cobrimos ambos os esquemas.
+    for tentativa in (
+        lambda: knowledge.remove_vectors_by_name(stem),
+        lambda: vector_db.delete_by_metadata({"arquivo": nome_pdf}),
+    ):
+        try:
+            tentativa()
+        except Exception:
+            pass
+
+    caminho = PASTA_ARTIGOS / nome_pdf
+    if caminho.exists():
+        caminho.unlink()
+        return True
+    return False
+
+
+def limpar_base() -> int:
+    """Remove TODOS os artigos: apaga os vetores e os PDFs da pasta.
+
+    Útil quando o usuário quer descartar os artigos de exemplo e montar uma
+    base sobre outro assunto do zero. Retorna quantos artigos foram removidos.
+    """
+    pdfs = listar_pdfs()
+    for pdf in pdfs:
+        remover_artigo(pdf.name)
+    return len(pdfs)
+
+
 def preparar_base() -> list[str]:
     """Ingere na base vetorial todos os PDFs ainda não indexados.
 

@@ -90,7 +90,37 @@ with st.sidebar:
     pdfs = core.listar_pdfs()
     if pdfs:
         for pdf in pdfs:
-            st.markdown(f"📄 `{pdf.name}`")
+            c1, c2 = st.columns([0.85, 0.15], vertical_alignment="center")
+            with c1:
+                st.markdown(f"📄 `{pdf.name}`")
+            with c2:
+                if st.button("−", key=f"del_{pdf.name}",
+                             type="tertiary", help=f"Remover {pdf.name} da base"):
+                    core.remover_artigo(pdf.name)
+                    st.cache_resource.clear()  # força reindexar sem o artigo
+                    st.session_state.resultado = None
+                    st.toast(f"{pdf.name} removido da base.", icon="🗑️")
+                    st.rerun()
+
+        if st.button("🧹 Limpar toda a base", use_container_width=True,
+                     help="Remove todos os artigos e seus vetores"):
+            st.session_state.confirmar_limpar = True
+
+        if st.session_state.get("confirmar_limpar"):
+            st.warning("Remover **todos** os artigos? Esta ação não pode ser desfeita.")
+            cc1, cc2 = st.columns(2)
+            with cc1:
+                if st.button("✅ Confirmar", use_container_width=True):
+                    n = core.limpar_base()
+                    st.cache_resource.clear()
+                    st.session_state.confirmar_limpar = False
+                    st.session_state.resultado = None
+                    st.toast(f"{n} artigo(s) removidos.", icon="🧹")
+                    st.rerun()
+            with cc2:
+                if st.button("Cancelar", use_container_width=True):
+                    st.session_state.confirmar_limpar = False
+                    st.rerun()
     else:
         st.warning("Nenhum PDF em `artigos/`. Envie arquivos abaixo.")
 
