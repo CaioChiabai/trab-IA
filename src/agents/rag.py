@@ -5,21 +5,19 @@ conhecimento vetorial (LanceDB, com embeddings locais via FastEmbed) e responde 
 perguntas comparativas de alto nível sobre metodologias, datasets, resultados e
 lacunas — citando a origem de cada afirmação (citation grounding).
 
-Coloque os PDFs dos artigos na pasta ``artigos/`` e execute::
+Coloque os PDFs dos artigos na pasta ``data/artigos/`` e execute (da raiz)::
 
-    python agent_rag.py
+    python -m src.agents.rag
 
-Este módulo é COMPLEMENTAR ao ``agent.py`` (pesquisador por busca na web): o
-``agent.py`` busca fontes na internet; este aqui responde sobre um conjunto FIXO
-de PDFs já fornecidos, como pede o Tema 10 (RAG multi-documento).
+Este módulo é COMPLEMENTAR ao agente web (``src/agents/web.py``): o agente web
+busca fontes na internet; este aqui responde sobre um conjunto FIXO de PDFs já
+fornecidos, como pede o Tema 10 (RAG multi-documento).
 """
 
-import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.groq import Groq
 from agno.knowledge.knowledge import Knowledge
@@ -30,15 +28,11 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
-# Utilitários compartilhados com o agente web (re-exportados para app_rag.py).
-from core_utils import salvar_resultado
-
-load_dotenv()
+from src.config import PASTA_ARTIGOS, PASTA_VECTOR, GROQ_MODEL_RAG, EMBED_MODEL
+# Utilitário compartilhado com o agente web (re-exportado para as views).
+from src.utils import salvar_resultado
 
 console = Console()
-
-PASTA_ARTIGOS = Path("artigos")
-PASTA_VECTOR = Path("vectordb")
 
 
 # --------------------------------------------------------------------------- #
@@ -47,9 +41,7 @@ PASTA_VECTOR = Path("vectordb")
 # Banco vetorial local (LanceDB) — não precisa de servidor. Os embeddings são
 # gerados LOCALMENTE pelo FastEmbed (modelo ONNX), sem chave de API nem cota:
 # usamos um modelo multilíngue porque as perguntas são em português e os
-# artigos, em inglês (recuperação cross-lingual).
-EMBED_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-
+# artigos, em inglês (recuperação cross-lingual). Ver EMBED_MODEL em src/config.
 vector_db = LanceDb(
     uri=str(PASTA_VECTOR),
     table_name="artigos",
@@ -158,7 +150,7 @@ agent = Agent(
     # contexto RAG é grande, então usamos por padrão um modelo com limite de
     # tokens/min mais alto no free-tier do Groq (o gpt-oss-120b, usado na busca
     # web, tem apenas 8k TPM e estoura com o contexto do RAG).
-    model=Groq(id=os.getenv("GROQ_MODEL_RAG", "meta-llama/llama-4-scout-17b-16e-instruct")),
+    model=Groq(id=GROQ_MODEL_RAG),
     knowledge=knowledge,
     # RAG "retrieve-then-read" com recuperação BALANCEADA por artigo: montamos o
     # contexto manualmente (ver montar_contexto), garantindo trechos de TODOS os

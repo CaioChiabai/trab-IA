@@ -12,7 +12,7 @@ O projeto possui dois modos principais de funcionamento:
 - **Framework Web**: Streamlit
 - **Agentes e IA**: Agno, Groq LLM (ex: llama-3.3-70b-versatile)
 - **Busca**: DuckDuckGo
-- **Banco Vetorial (RAG)**: Solução local para indexação de PDFs (através da pasta `artigos/`)
+- **Banco Vetorial (RAG)**: Solução local para indexação de PDFs (através da pasta `data/artigos/`)
 
 ## Pré-requisitos e Configuração
 
@@ -25,46 +25,51 @@ O projeto possui dois modos principais de funcionamento:
      ```
 
 2. **Artigos em PDF (Para o modo RAG)**:
-   - Caso deseje utilizar o modo RAG, coloque os artigos em formato `.pdf` dentro da pasta `artigos/` antes de iniciar. (Você também pode fazer o upload pela interface web do RAG).
+   - Caso deseje utilizar o modo RAG, coloque os artigos em formato `.pdf` dentro da pasta `data/artigos/` antes de iniciar. (Você também pode fazer o upload pela interface web do RAG).
 
 ## Como Executar e Testar
 
-O projeto possui scripts automatizados (`.bat`) para facilitar a execução no Windows. Eles automaticamente criam o ambiente virtual, instalam as dependências listadas em `requirements.txt` e iniciam a aplicação desejada.
+O projeto possui scripts automatizados (`.bat`) para facilitar a execução no Windows. Eles automaticamente criam o ambiente virtual, instalam as dependências listadas em `requirements.txt` e iniciam a aplicação.
 
-### Modo 1: Pesquisa na Web
+### Interface Web (Recomendado) — um único app com os dois modos
 
-Neste modo, o agente fará buscas na internet para responder à sua pergunta de pesquisa.
+- Execute o arquivo **`run_web.bat`**.
+- O navegador abrirá com a interface Streamlit. Na **barra lateral**, escolha o modo de pesquisa:
+  - **🌐 Pesquisa na Web**: o agente busca fontes reais na internet sobre qualquer tema.
+    - *Teste*: "Quais são os principais artigos sobre aprendizado federado?"
+  - **📚 Pesquisa nos PDFs (RAG)**: responde **com base nos PDFs** da pasta `data/artigos/`, com citações. Você pode adicionar ou remover PDFs pela própria interface.
+    - *Teste*: com artigos na base, pergunte "Quais metodologias são comparadas nestes artigos?"
 
-- **Interface Web (Recomendado)**:
-  - Execute o arquivo `run_web.bat`.
-  - O navegador abrirá automaticamente com a interface Streamlit.
-  - *Teste*: Tente fazer uma pergunta como: "Quais são os principais artigos sobre aprendizado federado?"
+### Linha de Comando (CLI)
 
-- **Linha de Comando (CLI)**:
-  - Execute o arquivo `run.bat`.
-  - Acompanhe o processo diretamente pelo terminal.
-
-### Modo 2: Pesquisador RAG (Base de Artigos Locais)
-
-Neste modo, o agente responderá perguntas **exclusivamente com base nos PDFs** presentes na pasta `artigos/`.
-
-- **Interface Web (Recomendado)**:
-  - Execute o arquivo `run_web_rag.bat`.
-  - Na interface, você verá os PDFs indexados e poderá enviar perguntas cujas respostas serão baseadas neles, com as devidas citações.
-  - *Teste*: Se você tiver artigos sobre LLMs na pasta, pergunte: "Quais metodologias são comparadas nestes artigos?"
-
-- **Linha de Comando (CLI)**:
-  - Execute o arquivo `run_rag.bat`.
-  - A pesquisa ocorrerá no terminal lendo sua base vetorial.
+- `run.bat` — pesquisa na web pelo terminal.
+- `run_rag.bat` — pesquisa RAG (base de PDFs locais) pelo terminal.
 
 ## Estrutura do Projeto
 
-- `app.py`: Front-end web (Streamlit) para a pesquisa na web.
-- `app_rag.py`: Front-end web (Streamlit) para a pesquisa RAG com PDFs.
-- `agent.py`: Lógica principal do agente de pesquisa na web.
-- `agent_rag.py`: Lógica principal do agente de pesquisa em base vetorial local.
-- `avaliar_traces.py`: Script para avaliação dos rastros de execução.
-- `artigos/`: Pasta onde os PDFs devem ser inseridos para o modo RAG.
-- `resultados/`: Pasta onde as pesquisas geradas são salvas em formato `.md`.
-- `traces/`: Logs e rastros de execução.
-- `*.bat`: Scripts facilitadores para iniciar cada uma das aplicações no Windows.
+```
+├── app.py                     # Entry Streamlit — despacha entre os dois modos escolhidos na tela
+├── run_web.bat / run.bat / run_rag.bat
+├── src/                       # Código-fonte da aplicação
+│   ├── config.py              # Configuração central: caminhos (absolutos) e modelos
+│   ├── utils.py               # Utilitários compartilhados (slug de arquivo, gravação dos resultados)
+│   ├── agents/
+│   │   ├── web.py             # Agente de pesquisa na web (DuckDuckGo)
+│   │   └── rag.py             # Agente RAG sobre base vetorial local de PDFs
+│   └── ui/
+│       ├── web_view.py        # Interface do modo de pesquisa na web
+│       └── rag_view.py        # Interface do modo de pesquisa RAG (PDFs)
+├── scripts/
+│   └── avaliar_traces.py      # Bateria de avaliação de traces do RAG
+├── data/                      # Dados (não versionados, exceto os PDFs de exemplo)
+│   ├── artigos/               # PDFs de entrada do modo RAG
+│   ├── vectordb/              # Base vetorial LanceDB (gerada)
+│   └── resultados/            # Relatórios .md gerados
+└── docs/                      # Documentação e artefatos de análise
+    ├── perguntas-exemplo.md
+    ├── dificuldades-implementacao.md
+    └── traces/
+```
+
+**Como rodar pela CLI** (a partir da raiz): `python -m src.agents.web` ou `python -m src.agents.rag`
+(os arquivos `.bat` já fazem isso automaticamente).

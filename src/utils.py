@@ -1,14 +1,12 @@
 """Utilitários compartilhados pelos dois agentes (web e RAG).
 
 Centraliza a geração de nome de arquivo e a gravação dos resultados, evitando
-código duplicado entre ``agent.py`` e ``agent_rag.py`` (antes cada um tinha sua
-própria cópia idêntica dessas funções).
+código duplicado entre os agentes.
 """
 
 import unicodedata
-from pathlib import Path
 
-PASTA_RESULTADOS = Path("resultados")
+from src.config import PASTA_RESULTADOS
 
 
 def slug_arquivo(pergunta: str) -> str:
@@ -26,8 +24,8 @@ def slug_arquivo(pergunta: str) -> str:
 
 
 def salvar_resultado(pergunta: str, conteudo: str) -> str:
-    """Grava o resultado em um arquivo Markdown dentro da pasta 'resultados'."""
-    PASTA_RESULTADOS.mkdir(exist_ok=True)
+    """Grava o resultado em um arquivo Markdown dentro da pasta de resultados."""
+    PASTA_RESULTADOS.mkdir(parents=True, exist_ok=True)
     caminho = PASTA_RESULTADOS / f"{slug_arquivo(pergunta)}.md"
     cabecalho = f"> **Pergunta de pesquisa:** {pergunta}\n\n---\n\n"
     caminho.write_text(cabecalho + conteudo + "\n", encoding="utf-8")

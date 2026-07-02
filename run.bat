@@ -11,8 +11,8 @@ echo Instalando dependencias...
 pip install -r requirements.txt --quiet
 
 echo.
-echo Iniciando agente...
+echo Iniciando agente (busca na web)...
 echo.
-python agent.py
+python -m src.agents.web
 
 pause

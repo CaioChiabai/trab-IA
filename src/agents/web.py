@@ -1,9 +1,7 @@
 import json
-import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.groq import Groq
 from ddgs import DDGS
@@ -11,10 +9,9 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
-# Utilitários compartilhados com o agente RAG (re-exportados para o app.py).
-from core_utils import salvar_resultado
-
-load_dotenv()
+from src.config import GROQ_MODEL_WEB
+# Utilitário compartilhado com o agente RAG (re-exportado para as views).
+from src.utils import salvar_resultado
 
 console = Console()
 
@@ -81,7 +78,7 @@ def web_search(query: str, max_results: int = 8) -> str:
 
 
 agent = Agent(
-    model=Groq(id=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")),
+    model=Groq(id=GROQ_MODEL_WEB),
     tools=[web_search],
     tool_call_limit=4,
     instructions="""Você é um pesquisador bibliográfico especializado em artigos científicos.

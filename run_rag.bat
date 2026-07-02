@@ -11,8 +11,8 @@ echo Instalando dependencias...
 pip install -r requirements.txt --quiet
 
 echo.
-echo Iniciando pesquisador RAG multi-artigos (le os PDFs da pasta artigos\)...
+echo Iniciando pesquisador RAG multi-artigos (le os PDFs da pasta data\artigos\)...
 echo.
-python agent_rag.py
+python -m src.agents.rag
 
 pause
