@@ -44,10 +44,9 @@ def rodar() -> list[dict]:
     for i, (tag, q) in enumerate(PERGUNTAS, 1):
         print(f">>> [{i}/{len(PERGUNTAS)}] {tag}")
         content, erro = "", None
-        fontes = A.fontes_recuperadas(q)  # trace de recuperação (local, barato)
+        fontes = A.montar_contexto(q)[1]  # trace de recuperação (local, barato)
         try:
-            resp = A.agent.run(q)
-            content = resp.content or ""
+            content, fontes = A.rodar_agente(q)
             if "tool_use_failed" not in content:
                 A.salvar_resultado(q, content)
         except Exception as e:

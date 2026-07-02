@@ -113,11 +113,11 @@ def preparar_base() -> list[str]:
 agent = Agent(
     model=Groq(id=os.getenv("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")),
     knowledge=knowledge,
-    # RAG "tradicional" (retrieve-then-read): o Agno recupera os trechos relevantes
-    # e os injeta no contexto ANTES de chamar o modelo. NÃO usamos tool calling
-    # porque o Llama no Groq falha de forma intermitente ('tool_use_failed') ao
-    # emitir a chamada de função; injetar o contexto direto é 100% confiável.
-    add_knowledge_to_context=True,
+    # RAG "retrieve-then-read" com recuperação BALANCEADA por artigo: montamos o
+    # contexto manualmente (ver montar_contexto), garantindo trechos de TODOS os
+    # artigos. Não usamos tool calling (o Llama no Groq falha com 'tool_use_failed')
+    # nem a injeção automática do Agno (que concentra o top-k em poucos artigos).
+    add_knowledge_to_context=False,
     search_knowledge=False,
     markdown=True,
     instructions="""Você é um pesquisador bibliográfico especializado em análise
@@ -126,10 +126,11 @@ FIXO de artigos previamente ingeridos (em PDF). Seu papel é responder perguntas
 de alto nível comparando esses artigos entre si.
 
 CONTEXTO FORNECIDO:
-- Você recebe, no contexto desta conversa, trechos recuperados automaticamente dos
-  artigos ingeridos. Cada trecho indica o arquivo de origem.
+- Você recebe, na própria mensagem, trechos recuperados de CADA artigo da base,
+  agrupados por arquivo de origem (linhas "### Artigo: <arquivo>").
 - Baseie-se APENAS nesses trechos. Escreva a resposta COMPLETA de uma só vez.
-- Na tabela comparativa, procure incluir artigos distintos (evite repetir a mesma fonte).
+- Na tabela comparativa, inclua UMA LINHA POR ARTIGO fornecido, quando houver
+  informação relevante — o objetivo é comparar todos os artigos, não apenas um.
 
 REGRA FUNDAMENTAL — CITATION GROUNDING (integridade das citações):
 - Para CADA afirmação relevante, indique de qual artigo (arquivo/fonte) ela veio.
@@ -192,27 +193,52 @@ def salvar_resultado(pergunta: str, conteudo: str) -> str:
     return str(caminho)
 
 
-def fontes_recuperadas(pergunta: str, max_results: int = 10) -> list[str]:
-    """Retorna os artigos (arquivos) distintos que a busca vetorial recupera para
-    a pergunta — os mesmos trechos que são injetados no contexto do agente."""
-    fontes: list[str] = []
+def montar_contexto(pergunta: str, por_artigo: int = 3, pool: int = 150):
+    """Recuperação BALANCEADA: em vez de pegar apenas o top-k global (que tende a
+    concentrar-se num único artigo), recupera os ``por_artigo`` trechos mais
+    relevantes de CADA artigo. Assim, todos os artigos entram no contexto.
+
+    Retorna ``(contexto, fontes)``: o texto agrupado por artigo e a lista dos
+    arquivos incluídos."""
+    selecionados: dict[str, list[str]] = {}
     try:
-        for doc in knowledge.search(pergunta, max_results=max_results):
+        for doc in knowledge.search(pergunta, max_results=pool):
             arq = (getattr(doc, "meta_data", None) or {}).get("arquivo")
-            if arq and arq not in fontes:
-                fontes.append(arq)
+            if not arq:
+                continue
+            trechos = selecionados.setdefault(arq, [])
+            if len(trechos) < por_artigo:
+                trechos.append(doc.content or "")
     except Exception:
         pass
-    return fontes
+
+    blocos = []
+    for arq, trechos in selecionados.items():
+        corpo = "\n\n".join(t.strip() for t in trechos if t.strip())
+        blocos.append(f"### Artigo: {arq}\n{corpo}")
+    return "\n\n".join(blocos), list(selecionados.keys())
+
+
+def _mensagem_com_contexto(pergunta: str, contexto: str) -> str:
+    return (
+        f"{pergunta}\n\n"
+        "=== TRECHOS RECUPERADOS DOS ARTIGOS (baseie-se APENAS nestes) ===\n\n"
+        f"{contexto}"
+    )
+
+
+def rodar_agente(pergunta: str):
+    """Monta o contexto balanceado, roda o agente e retorna ``(conteudo, fontes)``."""
+    contexto, fontes = montar_contexto(pergunta)
+    resposta = agent.run(_mensagem_com_contexto(pergunta, contexto))
+    return (resposta.content or ""), fontes
 
 
 def executar_pesquisa(pergunta: str):
-    """Roda o agente em segundo plano com barra de progresso.
-
-    Retorna uma tupla ``(conteudo, fontes)`` — ``fontes`` é a lista de artigos
-    efetivamente recuperados da base vetorial para responder à pergunta."""
+    """Versão para a CLI: roda o agente em segundo plano com barra de progresso.
+    Retorna ``(conteudo, fontes)``."""
     with ThreadPoolExecutor(max_workers=1) as executor:
-        futuro = executor.submit(agent.run, pergunta)
+        futuro = executor.submit(rodar_agente, pergunta)
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -225,9 +251,9 @@ def executar_pesquisa(pergunta: str):
             while not futuro.done():
                 progress.advance(tarefa, 1)
                 time.sleep(0.1)
-        resposta = futuro.result()
+        conteudo, fontes = futuro.result()
 
-    return (resposta.content or ""), fontes_recuperadas(pergunta)
+    return conteudo, fontes
 
 
 def _mostrar_fontes(fontes) -> None:

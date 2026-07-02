@@ -52,12 +52,11 @@ def preparar_base_cached() -> int:
 
 
 def executar_pesquisa(pergunta: str):
-    """Roda o agente RAG e devolve (conteúdo, artigos_recuperados, falhou)."""
-    resposta = core.agent.run(pergunta)
-    conteudo = resposta.content or ""
+    """Roda o agente RAG (recuperação balanceada por artigo) e devolve
+    (conteúdo, artigos_recuperados, falhou)."""
+    conteudo, artigos = core.rodar_agente(pergunta)
     falhou = "tool_use_failed" in conteudo or conteudo.strip().startswith('{"error"')
-    artigos = [] if falhou else core.fontes_recuperadas(pergunta)
-    return conteudo, artigos, falhou
+    return conteudo, ([] if falhou else artigos), falhou
 
 
 # --------------------------------------------------------------------------- #
