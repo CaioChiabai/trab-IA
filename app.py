@@ -8,6 +8,7 @@ Para rodar:
     streamlit run app.py
 """
 
+import html
 import os
 from datetime import datetime
 from pathlib import Path
@@ -344,7 +345,7 @@ if st.session_state.resultado:
 
     if st.session_state.pergunta_atual:
         st.markdown(
-            f'<div class="query-badge">📋 {st.session_state.pergunta_atual}</div>',
+            f'<div class="query-badge">📋 {html.escape(st.session_state.pergunta_atual)}</div>',
             unsafe_allow_html=True,
         )
 
@@ -377,6 +378,12 @@ if st.session_state.resultado:
             trecho = fonte.get("trecho") or ""
             trecho_curto = trecho[:180] + ("…" if len(trecho) > 180 else "")
 
+            # Escapa dados vindos da web antes de injetar no HTML (evita quebra
+            # de layout e injeção via título/trecho/URL de resultados de busca).
+            titulo_s = html.escape(titulo)
+            trecho_s = html.escape(trecho_curto)
+            url_s = html.escape(url, quote=True)
+
             with cols[i % 2]:
                 st.markdown(
                     f"""
@@ -384,9 +391,9 @@ if st.session_state.resultado:
   <div style="display:flex;align-items:flex-start;gap:0.5rem;">
     <span class="fonte-num">{i + 1}</span>
     <div>
-      <div class="fonte-titulo">{titulo}</div>
-      <div class="fonte-trecho">{trecho_curto}</div>
-      <div class="fonte-link"><a href="{url}" target="_blank" rel="noopener">🔗 Acessar fonte →</a></div>
+      <div class="fonte-titulo">{titulo_s}</div>
+      <div class="fonte-trecho">{trecho_s}</div>
+      <div class="fonte-link"><a href="{url_s}" target="_blank" rel="noopener">🔗 Acessar fonte →</a></div>
     </div>
   </div>
 </div>

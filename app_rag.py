@@ -8,15 +8,13 @@ Para rodar:
     streamlit run app_rag.py
 """
 
+import os
 from datetime import datetime
-from pathlib import Path
 
 import streamlit as st
 
 # Reaproveita a lógica de negócio do agente RAG.
 import agent_rag as core
-
-PASTA_RESULTADOS = Path("resultados")
 
 EXEMPLOS = {
     "Comparar metodologias": (
@@ -74,7 +72,7 @@ for chave, valor in {
 with st.sidebar:
     st.header("⚙️ Configuração")
 
-    tem_chave = bool(core.os.getenv("GROQ_API_KEY"))
+    tem_chave = bool(os.getenv("GROQ_API_KEY"))
     if tem_chave:
         st.success("Chave Groq detectada", icon="✅")
     else:
@@ -210,7 +208,21 @@ if rodar:
                     status.update(label="Pesquisa concluída!", state="complete")
             except Exception as e:
                 status.update(label="Falha na pesquisa", state="error")
-                st.error(f"Ocorreu um erro:\n\n```\n{e}\n```")
+                msg = str(e).lower()
+                if any(t in msg for t in
+                       ("rate_limit", "tokens per minute", "too large", "413")):
+                    st.warning(
+                        "**Limite de tokens por minuto do Groq atingido** "
+                        "(free-tier: ~8.000 tokens/min).\n\n"
+                        "O que fazer:\n"
+                        "- Aguarde cerca de 1 minuto e tente de novo;\n"
+                        "- Reduza o número de artigos na base (remova os que não "
+                        "forem relevantes à pergunta);\n"
+                        "- Ou use um modelo com limite maior definindo `GROQ_MODEL` "
+                        "no arquivo `.env`."
+                    )
+                else:
+                    st.error(f"Ocorreu um erro:\n\n```\n{e}\n```")
 
 
 # --------------------------------------------------------------------------- #

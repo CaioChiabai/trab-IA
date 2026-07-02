@@ -44,9 +44,13 @@ def rodar() -> list[dict]:
     for i, (tag, q) in enumerate(PERGUNTAS, 1):
         print(f">>> [{i}/{len(PERGUNTAS)}] {tag}")
         content, erro = "", None
-        fontes = A.montar_contexto(q)[1]  # trace de recuperação (local, barato)
+        # Monta o contexto UMA vez e reaproveita: obtém o trace de recuperação
+        # (quais artigos entraram) e já roda o agente com o mesmo contexto,
+        # evitando uma segunda busca vetorial idêntica.
+        contexto, fontes = A.montar_contexto(q)
         try:
-            content, fontes = A.rodar_agente(q)
+            resposta = A.agent.run(A._mensagem_com_contexto(q, contexto))
+            content = resposta.content or ""
             if "tool_use_failed" not in content:
                 A.salvar_resultado(q, content)
         except Exception as e:

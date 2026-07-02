@@ -16,7 +16,6 @@ de PDFs já fornecidos, como pede o Tema 10 (RAG multi-documento).
 
 import os
 import time
-import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -31,13 +30,15 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
+# Utilitários compartilhados com o agente web (re-exportados para app_rag.py).
+from core_utils import salvar_resultado
+
 load_dotenv()
 
 console = Console()
 
 PASTA_ARTIGOS = Path("artigos")
 PASTA_VECTOR = Path("vectordb")
-PASTA_RESULTADOS = Path("resultados")
 
 
 # --------------------------------------------------------------------------- #
@@ -153,7 +154,11 @@ def preparar_base() -> list[str]:
 # Agente
 # --------------------------------------------------------------------------- #
 agent = Agent(
-    model=Groq(id=os.getenv("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")),
+    # Modelo próprio do RAG (GROQ_MODEL_RAG), independente do agente web: o
+    # contexto RAG é grande, então usamos por padrão um modelo com limite de
+    # tokens/min mais alto no free-tier do Groq (o gpt-oss-120b, usado na busca
+    # web, tem apenas 8k TPM e estoura com o contexto do RAG).
+    model=Groq(id=os.getenv("GROQ_MODEL_RAG", "meta-llama/llama-4-scout-17b-16e-instruct")),
     knowledge=knowledge,
     # RAG "retrieve-then-read" com recuperação BALANCEADA por artigo: montamos o
     # contexto manualmente (ver montar_contexto), garantindo trechos de TODOS os
@@ -213,32 +218,23 @@ Responda sempre em português, de forma estruturada e acadêmica.""",
 
 
 # --------------------------------------------------------------------------- #
-# Utilitários de saída
+# Recuperação (RAG) e execução
 # --------------------------------------------------------------------------- #
-def _nome_arquivo(pergunta: str) -> str:
-    """Gera um nome de arquivo seguro (sem acentos) a partir da pergunta."""
-    sem_acento = "".join(
-        c for c in unicodedata.normalize("NFKD", pergunta)
-        if not unicodedata.combining(c)
-    )
-    base = "".join(c if c.isalnum() or c in " -_" else "" for c in sem_acento)
-    base = "-".join(base.lower().split())[:60].strip("-")
-    return base or "pesquisa"
+# Teto total do contexto enviado ao modelo, em caracteres (~4 chars/token).
+# Rede de segurança para não estourar o limite de tokens/min do provedor quando
+# a base tem muitos PDFs: cada artigo recebe uma fatia igual desse orçamento,
+# garantindo que TODOS apareçam no contexto. O modelo padrão do RAG
+# (GROQ_MODEL_RAG) tem limite de tokens/min alto o suficiente para esse teto.
+MAX_CONTEXTO_CHARS = 16000
 
 
-def salvar_resultado(pergunta: str, conteudo: str) -> str:
-    """Grava o resultado em um arquivo Markdown dentro da pasta 'resultados'."""
-    PASTA_RESULTADOS.mkdir(exist_ok=True)
-    caminho = PASTA_RESULTADOS / f"{_nome_arquivo(pergunta)}.md"
-    cabecalho = f"> **Pergunta de pesquisa:** {pergunta}\n\n---\n\n"
-    caminho.write_text(cabecalho + conteudo + "\n", encoding="utf-8")
-    return str(caminho)
-
-
-def montar_contexto(pergunta: str, por_artigo: int = 3, pool: int = 150):
-    """Recuperação BALANCEADA: em vez de pegar apenas o top-k global (que tende a
-    concentrar-se num único artigo), recupera os ``por_artigo`` trechos mais
-    relevantes de CADA artigo. Assim, todos os artigos entram no contexto.
+def montar_contexto(pergunta: str, por_artigo: int = 3, pool: int = 150,
+                    max_contexto_chars: int = MAX_CONTEXTO_CHARS):
+    """Recuperação BALANCEADA e com orçamento: em vez de pegar apenas o top-k
+    global (que tende a concentrar-se num único artigo), recupera os
+    ``por_artigo`` trechos mais relevantes de CADA artigo. O texto de cada
+    artigo é ainda limitado a uma fatia de ``max_contexto_chars``, para não
+    estourar o limite de tokens/minuto do provedor.
 
     Retorna ``(contexto, fontes)``: o texto agrupado por artigo e a lista dos
     arquivos incluídos."""
@@ -250,13 +246,19 @@ def montar_contexto(pergunta: str, por_artigo: int = 3, pool: int = 150):
                 continue
             trechos = selecionados.setdefault(arq, [])
             if len(trechos) < por_artigo:
-                trechos.append(doc.content or "")
+                trechos.append((doc.content or "").strip())
     except Exception:
         pass
 
+    if not selecionados:
+        return "", []
+
+    # Divide o orçamento igualmente entre os artigos recuperados.
+    budget_por_artigo = max(500, max_contexto_chars // len(selecionados))
+
     blocos = []
     for arq, trechos in selecionados.items():
-        corpo = "\n\n".join(t.strip() for t in trechos if t.strip())
+        corpo = "\n\n".join(t for t in trechos if t)[:budget_por_artigo]
         blocos.append(f"### Artigo: {arq}\n{corpo}")
     return "\n\n".join(blocos), list(selecionados.keys())
 

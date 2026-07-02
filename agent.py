@@ -1,7 +1,6 @@
 import json
 import os
 import time
-import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 
 from dotenv import load_dotenv
@@ -11,6 +10,9 @@ from ddgs import DDGS
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
+
+# Utilitários compartilhados com o agente RAG (re-exportados para o app.py).
+from core_utils import salvar_resultado
 
 load_dotenv()
 
@@ -128,29 +130,6 @@ resultados úteis, preencha a seção "Resumo geral" explicando isso e deixe as 
 vazias ou com a observação "sem dados suficientes".""",
     debug_mode=False,
 )
-
-
-def _nome_arquivo(pergunta: str) -> str:
-    """Gera um nome de arquivo seguro (sem acentos) a partir do tema pesquisado."""
-    # Remove acentos para um slug 100% portável entre sistemas de arquivos.
-    sem_acento = "".join(
-        c for c in unicodedata.normalize("NFKD", pergunta)
-        if not unicodedata.combining(c)
-    )
-    base = "".join(c if c.isalnum() or c in " -_" else "" for c in sem_acento)
-    base = "-".join(base.lower().split())[:60].strip("-")
-    return base or "pesquisa"
-
-
-def salvar_resultado(pergunta: str, conteudo: str) -> str:
-    """Grava o resultado em um arquivo Markdown dentro da pasta 'resultados'."""
-    pasta = "resultados"
-    os.makedirs(pasta, exist_ok=True)
-    caminho = os.path.join(pasta, f"{_nome_arquivo(pergunta)}.md")
-    cabecalho = f"> **Pergunta de pesquisa:** {pergunta}\n\n---\n\n"
-    with open(caminho, "w", encoding="utf-8") as f:
-        f.write(cabecalho + conteudo + "\n")
-    return caminho
 
 
 def executar_pesquisa(pergunta: str) -> str:
